@@ -1,0 +1,2 @@
+#!/bin/bash
+echo $(\ls -1) | grep -c | wc -l 
