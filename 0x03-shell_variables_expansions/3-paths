@@ -1,2 +1,2 @@
 #!/bin/bash
-echo "find $PATH | cut -d'/' -f 2-| wc -l"
+find $PATH | cut -d'/' -f 2-| wc -l
