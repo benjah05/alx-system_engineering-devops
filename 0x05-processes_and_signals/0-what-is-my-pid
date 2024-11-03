@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
+#PID of bash script
+
 echo $$

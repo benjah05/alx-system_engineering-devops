@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#SIGTERM
+
 while true
 do
 	echo "To infinity and beyond"
