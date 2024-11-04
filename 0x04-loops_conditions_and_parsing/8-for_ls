@@ -1,14 +1,11 @@
 #!/usr/bin/env bash
 #This script is diplaying contents of "ls"
-hour=0
-while [ $hour -le 12 ]
+for file in *;
 do
-	echo "Hour: $hour"
-	min=1
-	while [ $min -le 59 ]
-	do
-		echo $min
-		min=$(( $min + 1 ))
-	done
-	hour=$(( $hour + 1 ))
+    # Skip if it's a directory
+    if [[ -f "$file" ]]; then
+        # Remove everything up to and including the first dash
+        formatted_name="${file#*-}"
+        echo "$formatted_name"
+    fi
 done
