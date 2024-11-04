@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 #kill 7-highlander abruptly
 
-killall -9 7-highlander
+pkill 7-highlander
