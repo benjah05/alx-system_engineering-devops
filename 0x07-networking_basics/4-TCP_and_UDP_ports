@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-#TCP and UDP ports
+#TCP and UDP ports: display listening ports only
 netstat -l -p
