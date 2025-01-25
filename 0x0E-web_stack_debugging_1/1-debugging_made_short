@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+#get nginx on our system
+sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+sudo service nginx restart
+service nginx stop
