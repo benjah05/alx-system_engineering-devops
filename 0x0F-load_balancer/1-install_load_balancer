@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#install the load balancer
+apt-get update
+apt-get install -y haproxy
+
+printf %s "
+frontend lb-01_front
+        bind *:80
+        mode http
+        default_backend lb-01_back
+backend lb-01_back
+        balance roundrobin
+        server 647530-web-01 18.234.145.228 check
+        server 647530-web-02 54.157.183.178 check
+" >> /etc/haproxy/haproxy.cfg
+
+echo "ENABLED=1" >> /etc/default/haproxy
+service haproxy start
