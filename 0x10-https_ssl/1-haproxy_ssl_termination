@@ -1,0 +1,48 @@
+#haproxy ssl termination
+#configure haproxy to handle encrypted traffic
+#unencryot it and pass it on its destination
+global
+	log /dev/log  local0
+	log /dev/log  local1  notice
+	chroot /var/lib/haproxy
+	stats socket /run/haproxy/admin.sock mode 660 level admin
+	stats timeout 30s
+	user haproxy
+	group haproxy
+	daemon
+	tune.ssl.deafult-dh-param 2048
+
+	#defaul ssl material locations
+	ca-base /etc/ssl/certs
+	crt-base /etc/ssl/private
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000ms
+    timeout client  50000ms
+    timeout server  50000ms
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
+
+frontend https_frontend
+	bind *:443 ssl crt /etc/haproxy/ssl/www.edwardortiz.tech.pem
+        reqadd X-Forwarded-Proto:\ https
+        default_backend https_backend
+
+backend https_backend
+	balance rounrobin
+	redirect scheme https if !{ ssl_fc }
+	server 647530-web-01 54.209.113.76 check
+	server 647530-web-02 54.157.183.178 check
+
+	#serve a custom response containing "ALX"
+	http-response set-header X-Served-By ALX
+	http-request add-header X-Forwaded-Proto https if (ssl_fc}
