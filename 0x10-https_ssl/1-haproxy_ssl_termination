@@ -16,6 +16,11 @@ global
 	ca-base /etc/ssl/certs
 	crt-base /etc/ssl/private
 
+	# See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
+        ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-S>
+        ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
+        ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
+
 defaults
     log     global
     mode    http
@@ -32,17 +37,19 @@ defaults
     errorfile 503 /etc/haproxy/errors/503.http
     errorfile 504 /etc/haproxy/errors/504.http
 
+frontend http_frontend
+        bind *:80
+        mode http
+        http-request redirect scheme https code 301 unless { ssl_fc }
+        http-request set-header X_Forwarded-Proto http
+        default_backend https_backend
+
 frontend https_frontend
-	bind *:443 ssl crt /etc/haproxy/ssl/www.edwardortiz.tech.pem
-        reqadd X-Forwarded-Proto:\ https
+        bind *:443 ssl crt /etc/haproxy/certs/www.senzele.tech.pem
+        http-request set-header X-Forwarded-Proto https
         default_backend https_backend
 
 backend https_backend
-	balance rounrobin
-	redirect scheme https if !{ ssl_fc }
-	server 647530-web-01 54.209.113.76 check
-	server 647530-web-02 54.157.183.178 check
-
-	#serve a custom response containing "ALX"
-	http-response set-header X-Served-By ALX
-	http-request add-header X-Forwaded-Proto https if (ssl_fc}
+        balance roundrobin
+        server 647530-web-01 54.209.113.76:80 check
+        server 647530-web-02 54.157.183.178:80 check
